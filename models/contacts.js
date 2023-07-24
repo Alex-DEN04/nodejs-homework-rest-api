@@ -49,7 +49,7 @@ const updateContact = async (contactId, body) => {
 module.exports = {
   listContacts,
   getContactById,
-  removeContact,
   addContact,
+  removeContact,
   updateContact,
 };
