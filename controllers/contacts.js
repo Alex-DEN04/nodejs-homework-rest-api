@@ -1,6 +1,6 @@
-const {Contact} = require("../models/contact");
-const {HttpError, ctrlWrapper } = require("../helpers");
-const {schemas} = require("../models/contact")
+const { Contact } = require("../models/contact");
+const { HttpError, ctrlWrapper } = require("../helpers");
+const { schemas } = require("../models/contact");
 
 const getAll = async (req, res, next) => {
   const result = await Contact.find();
@@ -25,14 +25,14 @@ const add = async (req, res) => {
   res.status(201).json(result);
 };
 
-// const deleteById = async (req, res, next) => {
-//   const { contactId } = req.params;
-//   const result = await contacts.removeContact(contactId);
-//   if (!result) {
-//     throw HttpError(404, "Not found");
-//   }
-//   res.status(200).json({ message: "contact deleted" });
-// };
+const deleteById = async (req, res, next) => {
+  const { contactId } = req.params;
+  const result = await Contact.findByIdAndDelete(contactId);
+  if (!result) {
+    throw HttpError(404, "Not found");
+  }
+  res.status(200).json({ message: "contact deleted" });
+};
 
 const updateById = async (req, res, next) => {
   const { error } = schemas.addSchema.validate(req.body);
@@ -40,7 +40,9 @@ const updateById = async (req, res, next) => {
     throw HttpError(400, "missing fields");
   }
   const { contactId } = req.params;
-  const result = await Contact.findByIdAndUpdate(contactId, req.body, {new: true});
+  const result = await Contact.findByIdAndUpdate(contactId, req.body, {
+    new: true,
+  });
   if (!result) {
     throw HttpError(404, "Not found");
   }
@@ -50,10 +52,12 @@ const updateById = async (req, res, next) => {
 const updateStatus = async (req, res, next) => {
   const { error } = schemas.updateStatusSchema.validate(req.body);
   if (error) {
-    throw HttpError(400, "missing fields");
+    throw HttpError(400, "missing field favorite");
   }
   const { contactId } = req.params;
-  const result = await Contact.findByIdAndUpdate(contactId, req.body, {new: true});
+  const result = await Contact.findByIdAndUpdate(contactId, req.body, {
+    new: true,
+  });
   if (!result) {
     throw HttpError(404, "Not found");
   }
@@ -64,7 +68,7 @@ module.exports = {
   getAll: ctrlWrapper(getAll),
   getById: ctrlWrapper(getById),
   add: ctrlWrapper(add),
-  // deleteById: ctrlWrapper(deleteById),
+  deleteById: ctrlWrapper(deleteById),
   updateById: ctrlWrapper(updateById),
   updateStatus: ctrlWrapper(updateStatus),
 };
