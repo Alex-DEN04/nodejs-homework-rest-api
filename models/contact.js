@@ -3,6 +3,8 @@ const Joi = require("joi");
 
 const { handleMongooseError } = require("../helpers");
 
+const phoneRegExp = /^(\()?\d{3}(\))?(-|\s)?\d{3}(-|\s)\d{4}$/;
+
 const contactSchema = Schema({
   name: {
     type: String,
@@ -24,8 +26,8 @@ contactSchema.post("save", handleMongooseError);
 
 const addSchema = Joi.object({
   name: Joi.string().required(),
-  email: Joi.string(),
-  phone: Joi.string(),
+  email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'org', 'uk'] } }).required(),
+  phone: Joi.string().pattern(phoneRegExp).required(),
   favorite: Joi.boolean(),
 });
 
