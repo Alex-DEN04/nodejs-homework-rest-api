@@ -3,7 +3,8 @@ const Joi = require("joi");
 
 const { handleMongooseError } = require("../helpers");
 
-const emailRegExp = /^[A-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[A-Z0-9.-]+$/;
+const paswordRegExp = /^[a-zA-Z0-9]{3,30}$/;
+const emailRegExp = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 
 const userSchema = Schema(
   {
@@ -30,13 +31,12 @@ userSchema.post("save", handleMongooseError);
 
 const registerSchema = Joi.object({
   email: Joi.string().pattern(emailRegExp).required(),
-  password: Joi.string().required(),
+  password: Joi.string().pattern(paswordRegExp).required(),
   subscription: Joi.string(),
 });
-
 const loginSchema = Joi.object({
   email: Joi.string().pattern(emailRegExp).required(),
-  password: Joi.string().required(),
+  password: Joi.string().pattern(paswordRegExp).required(),
 });
 
 const schemas = {

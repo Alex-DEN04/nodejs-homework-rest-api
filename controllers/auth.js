@@ -4,14 +4,9 @@ const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = process.env;
 const { User } = require("../models/user");
 const { HttpError, ctrlWrapper } = require("../helpers");
-const { schemas } = require("../models/user");
 
 const register = async (req, res) => {
-  const { error } = schemas.registerSchema.validate(req.body);
-  if (error) {
-    throw HttpError(400, "missing required name field");
-  }
-
+  console.log(req.body)
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user) {
@@ -28,13 +23,9 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  //     const { error } = schemas.loginSchema.validate(req.body);
-  //   if (error) {
-  //     throw HttpError(400, "missing required name field");
-  //   }
   const { email, password } = req.body;
   const user = await User.findOne({ email });
-  console.log(user);
+
   if (!user) {
     throw HttpError(401, "Email or password is wrong");
   }
@@ -47,13 +38,33 @@ const login = async (req, res) => {
     id: user._id,
   };
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
+  await User.findByIdAndUpdate(user._id, { token });
 
   res.json({
     token,
   });
 };
 
+const getCurrent = (req, res) => {
+  const { email, subscription } = req.user;
+  res.json({
+    email,
+    subscription,
+  });
+};
+
+const logout = async (req, res) => {
+  const { _id } = req.user;
+  await User.findByIdAndUpdate(_id, { token: "" });
+
+  res.json({
+    message: "Not authorized",
+  });
+};
+
 module.exports = {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
+  getCurrent: ctrlWrapper(getCurrent),
+  logout: ctrlWrapper(logout),
 };
