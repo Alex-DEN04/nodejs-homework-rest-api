@@ -14,10 +14,12 @@ const register = async (req, res) => {
   const hashPassword = await bcrypt.hash(password, 10);
 
   const newUser = await User.create({ ...req.body, password: hashPassword });
-  res.status(201).json({newUser: {
-    email: newUser.email,
-    subscription: newUser.subscription,
-  }});
+  res.status(201).json({
+    newUser: {
+      email: newUser.email,
+      subscription: newUser.subscription,
+    },
+  });
 };
 
 const login = async (req, res) => {
@@ -43,7 +45,7 @@ const login = async (req, res) => {
     user: {
       email: user.email,
       subscription: user.subscription,
-  }
+    },
   });
 };
 
