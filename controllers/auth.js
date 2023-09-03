@@ -6,7 +6,6 @@ const { User } = require("../models/user");
 const { HttpError, ctrlWrapper } = require("../helpers");
 
 const register = async (req, res) => {
-  console.log(req.body)
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user) {
@@ -15,11 +14,10 @@ const register = async (req, res) => {
   const hashPassword = await bcrypt.hash(password, 10);
 
   const newUser = await User.create({ ...req.body, password: hashPassword });
-
-  res.status(201).json({
+  res.status(201).json({newUser: {
     email: newUser.email,
     subscription: newUser.subscription,
-  });
+  }});
 };
 
 const login = async (req, res) => {
@@ -42,6 +40,10 @@ const login = async (req, res) => {
 
   res.json({
     token,
+    user: {
+      email: user.email,
+      subscription: user.subscription,
+  }
   });
 };
 
@@ -57,9 +59,7 @@ const logout = async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { token: "" });
 
-  res.json({
-    message: "Not authorized",
-  });
+  res.status(204).json({ message: "No Content" });
 };
 
 module.exports = {

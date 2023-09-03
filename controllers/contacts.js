@@ -1,6 +1,5 @@
 const { Contact } = require("../models/contact");
 const { HttpError, ctrlWrapper } = require("../helpers");
-// const { schemas } = require("../models/contact");
 
 const getAll = async (req, res, next) => {
   const { _id: owner } = req.user;
@@ -23,10 +22,6 @@ const getById = async (req, res) => {
 };
 
 const add = async (req, res) => {
-  // const { error } = schemas.addSchema.validate(req.body);
-  // if (error) {
-  //   throw HttpError(400, "Missing required name field");
-  // }
   const { _id: owner } = req.user;
   const result = await Contact.create({ ...req.body, owner });
   res.status(201).json(result);
@@ -42,10 +37,6 @@ const deleteById = async (req, res, next) => {
 };
 
 const updateById = async (req, res, next) => {
-  // const { error } = schemas.addSchema.validate(req.body);
-  // if (error) {
-  //   throw HttpError(400, "Missing required name field");
-  // }
   const { contactId } = req.params;
   const result = await Contact.findByIdAndUpdate(contactId, req.body, {
     new: true,
@@ -57,10 +48,6 @@ const updateById = async (req, res, next) => {
 };
 
 const updateStatus = async (req, res, next) => {
-  // const { error } = schemas.updateStatusSchema.validate(req.body);
-  // if (error) {
-  //   throw HttpError(400, "Missing field favorite");
-  // }
   const { contactId } = req.params;
   const result = await Contact.findByIdAndUpdate(contactId, req.body, {
     new: true,
