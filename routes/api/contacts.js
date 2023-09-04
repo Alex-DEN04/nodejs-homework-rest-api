@@ -15,13 +15,7 @@ router.post("/", authenticate, validateBody(schemas.addSchema), ctrl.add);
 
 router.delete("/:contactId", authenticate, isValidId, ctrl.deleteById);
 
-router.put(
-  "/:contactId",
-  authenticate,
-  validateBody(schemas.updateById),
-  isValidId,
-  ctrl.updateById,
-);
+router.put("/:contactId", authenticate, isValidId, ctrl.updateById);
 
 router.patch(
   "/:contactId/favorite",
