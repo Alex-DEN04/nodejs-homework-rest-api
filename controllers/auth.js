@@ -6,9 +6,14 @@ const fs = require("fs/promises");
 const Jimp = require("jimp");
 const { nanoid } = require("nanoid");
 
-const { SECRET_KEY, BASE_URL } = process.env;
+const { SECRET_KEY } = process.env;
 const { User } = require("../models/user");
-const { HttpError, ctrlWrapper, sendEmail } = require("../helpers");
+const {
+  HttpError,
+  ctrlWrapper,
+  sendEmail,
+  verifyLetter,
+} = require("../helpers");
 
 const avatarDir = path.join(__dirname, "../", "public", "avatars");
 
@@ -29,11 +34,7 @@ const register = async (req, res) => {
     verificationToken,
   });
 
-  const verifyEmail = {
-    to: email,
-    subject: "Verify email",
-    html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verificationToken}">Click verify email</a>`,
-  };
+  const verifyEmail = verifyLetter(email, verificationToken);
   await sendEmail(verifyEmail);
 
   res.status(201).json({
@@ -69,12 +70,10 @@ const resendVerifyEmail = async (req, res) => {
   if (user.verify) {
     throw HttpError(400, "Verification has already been passed");
   }
-  const verifyEmail = {
-    to: email,
-    subject: "Verify email",
-    html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${user.verificationToken}">Click verify email</a>`,
-  };
+
+  const verifyEmail = verifyLetter(email, user.verificationToken);
   await sendEmail(verifyEmail);
+
   res.status(200).json({
     message: "Verification email sent",
   });
